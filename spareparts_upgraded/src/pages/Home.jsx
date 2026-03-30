@@ -5,17 +5,34 @@ import ProductCard from "../components/ProductCard"
 import Toast from "../components/Toast"
 import { formatINR } from "../data/dummyData"
 
-const HERO_CARDS = [
-  { icon:"⚙️", title:"Engine Parts",         sub:"Pistons, rings, gaskets", price:"From ₹499" },
-  { icon:"🛑", title:"Brakes & Suspension",   sub:"Pads, discs, shocks",    price:"From ₹999" },
-  { icon:"⚡", title:"Electrical Parts",      sub:"Alternators, sensors",   price:"From ₹599" },
-]
+// Dark themed category images mapped by category name keywords
+const CAT_IMAGES = {
+  "engine":      "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=600&q=80",
+  "brake":       "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=600&q=80",
+  "electrical":  "https://images.unsplash.com/photo-1601362840469-51e4d8d58785?w=600&q=80",
+  "body":        "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=600&q=80",
+  "filter":      "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=600&q=80",
+  "transmission":"https://images.unsplash.com/photo-1565043589221-1a6fd9ae45c7?w=600&q=80",
+  "cooling":     "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80",
+  "tyre":        "https://images.unsplash.com/photo-1558618047-f3a47a9b5e5f?w=600&q=80",
+  "wheel":       "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=600&q=80",
+  "accessory":   "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=600&q=80",
+  "suspension":  "https://images.unsplash.com/photo-1504222490345-c075b7b52e7b?w=600&q=80",
+  "default":     "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=600&q=80",
+}
+
+const getCatImage = (name) => {
+  const lower = name.toLowerCase()
+  for (const [key, url] of Object.entries(CAT_IMAGES)) {
+    if (lower.includes(key)) return url
+  }
+  return CAT_IMAGES.default
+}
 
 export default function Home() {
   const [toast, setToast] = useState(null)
   const navigate = useNavigate()
 
-  // ── Read from Redux (which reads from MongoDB) ──
   const products   = useSelector(s => s.products.list)
   const categories = useSelector(s => s.categories.list)
 
@@ -24,32 +41,31 @@ export default function Home() {
   return (
     <div>
       {/* HERO */}
-      <section className="hero">
-        <div className="hero-inner">
-          <div className="hero-grid">
-            <div>
-              <p className="eyebrow hero-eyebrow">🔩 Trusted Spare Parts Marketplace</p>
-              <h1 className="h1 hero-title">Find the <span>Right Part</span><br/>for Your Vehicle</h1>
-              <p className="hero-desc">OEM-grade spare parts for all major Indian and international car brands. Guaranteed fitment, fast delivery, hassle-free returns.</p>
-              <div className="hero-actions">
-                <button className="btn btn-primary btn-lg" onClick={() => navigate("/products")}>Shop Now →</button>
-                <button className="btn btn-outline btn-lg"  onClick={() => navigate("/products")}>Browse Catalogue</button>
-              </div>
-              <div className="hero-stats">
-                {[["10,000+","Parts in Stock"],["50+","Car Brands"],["12Mo","Warranty"],["48hr","Delivery"]].map(([v,l]) => (
-                  <div key={l}>
-                    <div className="stat-num">{v.replace("+","")}{v.includes("+")&&<span>+</span>}</div>
-                    <div className="stat-lbl">{l}</div>
-                  </div>
-                ))}
-              </div>
+      <section className="hero" style={{ padding:0, overflow:"hidden", position:"relative", minHeight:"520px" }}>
+        <div style={{
+          position:"absolute", inset:0,
+          backgroundImage:`url("https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1600&q=80")`,
+          backgroundSize:"cover", backgroundPosition:"center",
+          filter:"brightness(0.35)", zIndex:0,
+        }} />
+        <div style={{
+          position:"absolute", inset:0,
+          background:"linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(249,115,22,0.15) 100%)",
+          zIndex:1,
+        }} />
+        <div className="hero-inner" style={{ position:"relative", zIndex:2, padding:"80px 20px" }}>
+          <div style={{ maxWidth:"640px" }}>
+            <p className="eyebrow hero-eyebrow">🔩 Trusted Spare Parts Marketplace</p>
+            <h1 className="h1 hero-title">Find the <span>Right Part</span><br/>for Your Vehicle</h1>
+            <p className="hero-desc">OEM-grade spare parts for all major Indian and international car brands. Guaranteed fitment, fast delivery, hassle-free returns.</p>
+            <div className="hero-actions">
+              <button className="btn btn-primary btn-lg" onClick={() => navigate("/products")}>Shop Now →</button>
             </div>
-            <div className="hero-visual">
-              {HERO_CARDS.map((c,i) => (
-                <div key={i} className="hero-card">
-                  <div className="hero-card-icon">{c.icon}</div>
-                  <div><div className="hero-card-title">{c.title}</div><div className="hero-card-sub">{c.sub}</div></div>
-                  <div className="hero-card-price">{c.price}</div>
+            <div className="hero-stats">
+              {[["10,000+","Parts in Stock"],["50+","Car Brands"],["12Mo","Warranty"],["48hr","Delivery"]].map(([v,l]) => (
+                <div key={l}>
+                  <div className="stat-num">{v.replace("+","")}{v.includes("+")&&<span>+</span>}</div>
+                  <div className="stat-lbl">{l}</div>
                 </div>
               ))}
             </div>
@@ -69,7 +85,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* CATEGORIES */}
+      {/* CATEGORIES — bigger cards with dark images */}
       <section className="section">
         <div className="container">
           <div className="sec-header">
@@ -81,14 +97,39 @@ export default function Home() {
               No categories found. Add some in the Admin Dashboard.
             </div>
           ) : (
-            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(140px,1fr))", gap:"12px" }}>
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))", gap:"16px" }}>
               {categories.map(cat => (
                 <Link key={cat._id} to={`/products?cat=${cat._id}`} style={{ textDecoration:"none" }}>
-                  <div className="card card-glow" style={{ padding:"20px 14px", textAlign:"center", cursor:"pointer" }}>
-                    <div style={{ fontSize:"32px", marginBottom:"8px" }}>{cat.icon}</div>
-                    <div className="h4" style={{ fontSize:"13px" }}>{cat.name}</div>
-                    <div style={{ fontSize:"11px", color:"var(--t3)", marginTop:"3px" }}>
-                      {products.filter(p => p.categoryId === cat._id).length} parts
+                  <div style={{
+                    borderRadius:"var(--r3)", overflow:"hidden", cursor:"pointer",
+                    border:"1px solid var(--border)", position:"relative", height:"180px",
+                    transition:"transform .2s, box-shadow .2s",
+                  }}
+                    onMouseEnter={e => { e.currentTarget.style.transform="translateY(-4px)"; e.currentTarget.style.boxShadow="0 12px 32px rgba(249,115,22,.2)" }}
+                    onMouseLeave={e => { e.currentTarget.style.transform="translateY(0)"; e.currentTarget.style.boxShadow="none" }}
+                  >
+                    {/* Background image */}
+                    <div style={{
+                      position:"absolute", inset:0,
+                      backgroundImage:`url("${getCatImage(cat.name)}")`,
+                      backgroundSize:"cover", backgroundPosition:"center",
+                      filter:"brightness(0.4)",
+                    }} />
+                    {/* Gradient */}
+                    <div style={{
+                      position:"absolute", inset:0,
+                      background:"linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 100%)",
+                    }} />
+                    {/* Content */}
+                    <div style={{
+                      position:"absolute", inset:0, padding:"16px",
+                      display:"flex", flexDirection:"column", justifyContent:"flex-end",
+                    }}>
+                      <div style={{ fontSize:"28px", marginBottom:"6px" }}>{cat.icon}</div>
+                      <div style={{ fontWeight:700, fontSize:"15px", color:"#fff" }}>{cat.name}</div>
+                      <div style={{ fontSize:"12px", color:"rgba(255,255,255,0.6)", marginTop:"3px" }}>
+                        {products.filter(p => p.categoryId === cat._id).length} parts
+                      </div>
                     </div>
                   </div>
                 </Link>
@@ -119,7 +160,7 @@ export default function Home() {
         )
       })}
 
-      {/* empty state when no products at all */}
+      {/* empty state */}
       {products.length === 0 && (
         <section className="section">
           <div className="container" style={{ textAlign:"center", color:"var(--t3)", padding:"60px 0" }}>
@@ -130,25 +171,7 @@ export default function Home() {
         </section>
       )}
 
-      {/* PROMO BANNER */}
-      <section className="container" style={{ paddingBottom:"48px" }}>
-        <div style={{
-          borderRadius:"var(--r4)", overflow:"hidden",
-          background:"linear-gradient(135deg,rgba(249,115,22,.15) 0%,rgba(239,68,68,.1) 100%)",
-          border:"1px solid rgba(249,115,22,.25)",
-          padding:"40px 32px",
-          display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:"20px"
-        }}>
-          <div>
-            <p className="eyebrow" style={{ marginBottom:"8px" }}>Limited Time Offer</p>
-            <h2 className="h2" style={{ marginBottom:"10px" }}>Up to <span className="text-orange">40% OFF</span><br/>on Brake & Suspension</h2>
-            <p style={{ color:"var(--t2)", fontSize:"14px" }}>Use code <strong style={{ color:"var(--orange)" }}>BRAKE40</strong> at checkout</p>
-          </div>
-          <button className="btn btn-primary btn-lg" onClick={() => navigate("/products")}>
-            Shop Brakes →
-          </button>
-        </div>
-      </section>
+     
 
       {toast && <Toast message={toast} />}
     </div>

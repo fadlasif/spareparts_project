@@ -6,21 +6,15 @@ import { fetchProducts, fetchCategories } from "./store/store"
 
 function AppInner() {
   const dispatch = useDispatch()
-
   useEffect(() => {
-    // Fetch fresh data from MongoDB on load
     dispatch(fetchProducts())
     dispatch(fetchCategories())
-
-    // Also refresh every 30 seconds to stay in sync
     const interval = setInterval(() => {
       dispatch(fetchProducts())
       dispatch(fetchCategories())
-    }, 10000)
-
+    }, 15000)
     return () => clearInterval(interval)
   }, [])
-
   return <AppRoutes />
 }
 
