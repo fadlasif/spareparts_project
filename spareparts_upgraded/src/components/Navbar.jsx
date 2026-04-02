@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom"
 import { useSelector, useDispatch } from "react-redux"
 import { logout } from "../store/store"
 
-export default function Navbar({ searchQuery, setSearchQuery }) {
+export default function Navbar() {
   const [open, setOpen] = useState(false)
   const cart  = useSelector(s => s.cart.items)
   const auth  = useSelector(s => s.auth)
@@ -21,9 +21,10 @@ export default function Navbar({ searchQuery, setSearchQuery }) {
 
   return (
     <nav className="navbar">
-      <div className="navbar-inner">
-        {/* Logo */}
-        <Link to="/" className="navbar-logo" style={{ textDecoration:"none" }}>
+      <div className="navbar-inner" style={{ display:"flex", alignItems:"center", gap:"0" }}>
+
+        {/* Logo — left */}
+        <Link to="/" className="navbar-logo" style={{ textDecoration:"none", marginRight:"auto" }}>
           <div className="navbar-logo-icon">🚗</div>
           <div>
             <div className="navbar-logo-text">AUTO<span className="text-orange">PARTS</span></div>
@@ -31,38 +32,35 @@ export default function Navbar({ searchQuery, setSearchQuery }) {
           </div>
         </Link>
 
-        {/* Search */}
-        <div className="navbar-search">
-          <span className="navbar-search-icon">🔍</span>
-          <input
-            value={searchQuery || ""}
-            onChange={e => { setSearchQuery && setSearchQuery(e.target.value); if (loc.pathname !== "/products") navigate("/products") }}
-            placeholder="Search part, number or vehicle..."
-          />
-        </div>
-
-        {/* Desktop Nav */}
-        <div className="navbar-nav">
+        {/* Nav links — center */}
+        <div className="navbar-nav" style={{ position:"absolute", left:"50%", transform:"translateX(-50%)" }}>
           <Link to="/"         className={active("/")}>        <span>🏠</span> Home</Link>
           <Link to="/products" className={active("/products")}><span>📦</span> Products</Link>
           <Link to="/cart"     className={active("/cart")} style={{ position:"relative" }}>
             <span>🛒</span> Cart
             {count > 0 && <span className="cart-badge">{count}</span>}
           </Link>
+          {auth.isLoggedIn && (
+            <Link to="/my-orders" className={active("/my-orders")}><span>📋</span> My Orders</Link>
+          )}
+          {auth.isLoggedIn && auth.isAdmin && (
+            <Link to="/admin" className={active("/admin")}><span>🛡️</span> Admin</Link>
+          )}
+        </div>
 
+        {/* Login / Logout — far right */}
+        <div style={{ marginLeft:"auto", display:"flex", alignItems:"right" }}>
           {auth.isLoggedIn ? (
-            <>
-              <Link to="/my-orders" className={active("/my-orders")}><span>📋</span> My Orders</Link>
-              {auth.isAdmin && <Link to="/admin" className={active("/admin")}><span>🛡️</span> Admin</Link>}
-              <button className="btn btn-outline btn-sm" onClick={handleLogout}>Logout</button>
-            </>
+            <button className="btn btn-outline btn-sm" onClick={handleLogout}>Logout</button>
           ) : (
             <Link to="/login"><button className="btn btn-primary btn-sm">👤 Login</button></Link>
           )}
         </div>
 
         {/* Hamburger */}
-        <button className="navbar-hamburger" onClick={() => setOpen(v => !v)}>{open ? "✕" : "☰"}</button>
+        <button className="navbar-hamburger" onClick={() => setOpen(v => !v)} style={{ marginLeft:"12px" }}>
+          {open ? "✕" : "☰"}
+        </button>
       </div>
 
       {/* Mobile Menu */}
